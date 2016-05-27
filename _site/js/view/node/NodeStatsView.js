@@ -163,8 +163,7 @@ var NodeStatView = Backbone.View.extend(
             lodash.set(osStats, 'cpu.vendor', lodash.get(node, 'os.cpu.vendor', 'N/A'));
             osStats.cpu.model = lodash.get(node, 'os.cpu.model', 'N/A');
             osStats.cpu.total_cores = lodash.get(node, 'os.cpu.total_cores', 'N/A');
-            osStats.available_processors = nodeInfo.nodes[nodeId].os.available_processors;
-            osStats.max_proc_cpu = 100 * osStats.available_processors;
+            osStats.max_proc_cpu = 100 ;
 
             netInfo.transport = nodeInfo.nodes[nodeId].transport;
             if (!netInfo.transport) {
@@ -276,7 +275,7 @@ var NodeStatView = Backbone.View.extend(
             this.getchart.setData([this.getdata]);
 
             //os
-            var usedCPU = osStats.cpu.user + osStats.cpu.sys;
+            var usedCPU = osStats.cpu_percent;
             this.cpudata = chart.addData(this.cpudata, [new Date().getTime() + 1, usedCPU]);
             this.cpudata.push([now, usedCPU]);
             this.cpuchart = chart.draw("#chart-cpu", this.cpudata, chart.cpu.options());
@@ -291,13 +290,12 @@ var NodeStatView = Backbone.View.extend(
             // process
             this.proccpudata = chart.addData(this.proccpudata, [new Date().getTime() + 1, processStats.cpu.percent]);
             this.proccpudata.push([now, processStats.cpu.percent]);
-            this.proccpuchart = chart.draw("#chart-procpu", this.proccpudata, chart.procscpu.options(100 * osStats.available_processors));
+            this.proccpuchart = chart.draw("#chart-procpu", this.proccpudata, chart.procscpu.options(100));
             this.proccpuchart.setData([this.proccpudata]);
 
             var totalprocmemgb = (processStats.mem.total_virtual_in_bytes) / (1024 * 1024 * 1024);
-            var residentprocmemgb = (processStats.mem.resident_in_bytes) / (1024 * 1024 * 1024);
-            this.procmemdata = chart.addData(this.procmemdata, [new Date().getTime() + 1, residentprocmemgb]);
-            this.procmemdata.push([now, residentprocmemgb]);
+            this.procmemdata = chart.addData(this.procmemdata, [new Date().getTime() + 1, totalprocmemgb]);
+            this.procmemdata.push([now, totalprocmemgb]);
             this.procmemchart = chart.draw("#chart-procmem", this.procmemdata, chart.procmem.options(totalprocmemgb));
             this.procmemchart.setData([this.procmemdata]);
 
